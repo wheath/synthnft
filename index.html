@@ -1,5 +1,64 @@
 <html>
+  <head>
+    <title>Synthetic Non-fungible Tokens</title>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+	<script type='javascript'>
+let currentAccount = null;
+
+function handleAccountsChanged(accounts) {
+  console.log("Calling HandleChanged");
+  console.log(accounts);
+
+  if (accounts.length === 0) {
+    console.log("Please connect to MetaMask.");
+    $("#enableMetamask").html("Connect with Metamask");
+  } else if (accounts[0] !== currentAccount) {
+    currentAccount = accounts[0];
+    $("#enableMetamask").html(currentAccount);
+    $("#status").html("");
+
+    if (currentAccount != null) {
+      // Set the button label
+      $("#enableMetamask").html(currentAccount);
+      console.log("_dbg here 1");
+    }
+  }
+  console.log("WalletAddress in HandleAccountChanged =" + walletAddress);
+}
+function connect() {
+  console.log("Calling connect()");
+  ethereum
+    .request({ method: "eth_requestAccounts" })
+    .then(handleAccountsChanged)
+    .catch((err) => {
+      if (err.code === 4001) {
+        // EIP-1193 userRejectedRequest error
+        // If this happens, the user rejected the connection request.
+        console.log("Please connect to MetaMask.");
+        $("#status").html("You refused to connect Metamask");
+      } else {
+        console.log("_dbg error occured");
+        console.error(err);
+      }
+    });
+}
+
+$(document).ready(function () {
+  //const Web3 = require('web3'); // Load Web3 library
+  const web3 = new Web3(new Web3.providers.HttpProvider('https://moonbase-alpha.blastapi.io/98ff896c-8d2c-4adc-b82f-6ac373838418')); 
+  
+  $("#mybutton").click(function () {
+    console.log("hello");
+    connect();
+  });
+});
+
+	</script>
+  </head>
   <body>
     <h1>Synthetic Non-fungible Tokens</h1>
+    <button id="mybutton">Connect Metmask</button>
+    <div id="enableMetamask"></div>
+    <div id="status"></div>
   </body>
 </html>
